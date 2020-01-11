@@ -1,12 +1,11 @@
 package graphicalComponents;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
+import javax.swing.border.Border;
 
 import gestionDonnees.GestionFichier;
 import gestionDonnees.Joueur;
+
+import java.awt.*;
 
 @SuppressWarnings("serial")
 public class Affichage extends JFrame{
@@ -20,9 +19,10 @@ public class Affichage extends JFrame{
 	    champRechercheMot = new JTextField();
 	    libelleRecherche = new JLabel("Rechercher un joueur");
 	    
-	    String[] listeColonne = new String[]{"Nom", "Équipe", "Position", "But", "Assistance"};
+	    String[] listeColonne = new String[]{"Nom", "Équipe", "Position", "But", "Assist."};
 	    
 	    tableJoueurs = new JTable(creationListeJoueur(), listeColonne);
+		System.out.println(tableJoueurs);
 	    
 		CreationAffichage();
 	}
@@ -33,25 +33,27 @@ public class Affichage extends JFrame{
 		ex.setVisible(true);
 	}
 	
-
 	public void CreationAffichage() {
-		setTitle("Dictio");
-        setSize(900, 500);
-        
-        libelleRecherche.setBounds(10, 1, 270, 25);
-        champRechercheMot.setBounds(5, 25, 270, 30);
-	    listeJoueurScroll = new JScrollPane(tableJoueurs);
-        listeJoueurScroll.setLayout(null);
-        listeJoueurScroll.setBounds(5, 65, 880, 400);
-        // listeJoueurScroll.add();
-        // listeJoueurScroll.showFrame();
-        // listeJoueurScroll.setViewportView(tableJoueurs);
+		JPanel joueurRechercheJPanel = new JPanel();
 
-        getContentPane().setLayout(null);
-        getContentPane().add(libelleRecherche);
-        getContentPane().add(champRechercheMot);
-        getContentPane().add(listeJoueurScroll);
-        
+		setTitle("Pool maker");
+		setLayout(new BorderLayout());
+
+	    listeJoueurScroll = new JScrollPane(tableJoueurs);
+		tableJoueurs.setFillsViewportHeight(true);
+        // listeJoueurScroll.setBounds(5, 65, 880, 400);
+		joueurRechercheJPanel.add(libelleRecherche);
+		joueurRechercheJPanel.add(champRechercheMot);
+		champRechercheMot.setPreferredSize(new Dimension(150, 25));
+		// joueurRechercheJPanel.setPreferredSize(new Dimension(150, 50));
+
+
+		add(joueurRechercheJPanel, BorderLayout.PAGE_START);
+		add(listeJoueurScroll, BorderLayout.PAGE_END);
+
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		pack();
+		setLocationRelativeTo(null);
         this.setResizable(false);
     }
 

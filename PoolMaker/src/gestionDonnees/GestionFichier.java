@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 
 public class GestionFichier {
 	public static Joueur[] obtenirListeJoueur() {
-		File fichier = new File(Paths.get("donnees") + "\\18-19.csv");
+		File fichier = new File(Paths.get("PoolMaker/donnees") + "\\18-19.csv");
 		BufferedReader br;
 		Joueur[] listeJoueur = new Joueur[1000];
 		int ligneCount = 0;
