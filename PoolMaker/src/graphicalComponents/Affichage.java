@@ -1,6 +1,8 @@
 package graphicalComponents;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import gestionDonnees.GestionFichier;
 import gestionDonnees.Joueur;
@@ -13,6 +15,7 @@ public class Affichage extends JFrame{
     JScrollPane listeJoueurScroll;
     JLabel libelleRecherche;
     JTable tableJoueurs;
+	final String[][] listeJoueurTest;
     
 	public Affichage() {
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -20,9 +23,8 @@ public class Affichage extends JFrame{
 	    libelleRecherche = new JLabel("Rechercher un joueur");
 	    
 	    String[] listeColonne = new String[]{"Nom", "Équipe", "Position", "But", "Assist."};
-	    
-	    tableJoueurs = new JTable(creationListeJoueur(), listeColonne);
-		System.out.println(tableJoueurs);
+		listeJoueurTest = creationListeJoueur();
+	    tableJoueurs = new JTable(listeJoueurTest, listeColonne);
 	    
 		CreationAffichage();
 	}
@@ -41,21 +43,40 @@ public class Affichage extends JFrame{
 
 	    listeJoueurScroll = new JScrollPane(tableJoueurs);
 		tableJoueurs.setFillsViewportHeight(true);
-        // listeJoueurScroll.setBounds(5, 65, 880, 400);
 		joueurRechercheJPanel.add(libelleRecherche);
 		joueurRechercheJPanel.add(champRechercheMot);
 		champRechercheMot.setPreferredSize(new Dimension(150, 25));
-		// joueurRechercheJPanel.setPreferredSize(new Dimension(150, 50));
-
 
 		add(joueurRechercheJPanel, BorderLayout.PAGE_START);
 		add(listeJoueurScroll, BorderLayout.PAGE_END);
+
+		champRechercheMot.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				listeJoueursUpdate();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				listeJoueursUpdate();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				listeJoueursUpdate();
+			}
+		});
 
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		pack();
 		setLocationRelativeTo(null);
         this.setResizable(false);
     }
+
+    public void listeJoueursUpdate(){
+		tableJoueurs = new JTable(rechercheListeJoueur(champRechercheMot.getText()),
+				new String[]{"Nom", "Équipe", "Position", "But", "Assist."});
+		remove(listeJoueurScroll);
+		listeJoueurScroll = new JScrollPane(tableJoueurs);
+		add(listeJoueurScroll, BorderLayout.PAGE_END);
+		validate();
+		pack();
+	}
 
 	public String[][] creationListeJoueur(){
 	    Joueur[] listeJoueur = GestionFichier.obtenirListeJoueur();
@@ -86,5 +107,23 @@ public class Affichage extends JFrame{
 	    	}
 	    }	    
 	    return matriceInfoJoueur;
-	}	
+	}
+
+	public String[][] rechercheListeJoueur(String charRecherche){
+		String[][] listeJoueurFiltre = new String[listeJoueurTest.length][];
+		int iterateur = 0;
+
+		for (String[] joueurFiltre : listeJoueurTest){
+			if (joueurFiltre[0] != null)
+			{
+				if (joueurFiltre[0].toLowerCase().contains(charRecherche)) {
+					System.out.println(joueurFiltre[0]);
+					listeJoueurFiltre[iterateur] = joueurFiltre;
+					iterateur++;
+				}
+			}
+		}
+
+		return listeJoueurFiltre;
+	}
 }
