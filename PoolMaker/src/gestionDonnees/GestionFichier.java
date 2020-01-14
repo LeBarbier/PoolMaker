@@ -31,7 +31,17 @@ public class GestionFichier {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		return listeJoueur;
+
+		int iterateur = 0;
+		Joueur[] listeJoueurRetournee = new Joueur[ligneCount];
+
+		for (Joueur joueur : listeJoueur){
+			if (joueur != null){
+				listeJoueurRetournee[iterateur] = joueur;
+			}
+			iterateur++;
+		}
+
+		return listeJoueurRetournee;
 	}
 }

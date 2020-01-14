@@ -3,6 +3,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 
 import gestionDonnees.GestionFichier;
 import gestionDonnees.Joueur;
@@ -15,6 +16,7 @@ public class Affichage extends JFrame{
     JScrollPane listeJoueurScroll;
     JLabel libelleRecherche;
     JTable tableJoueurs;
+	DefaultTableModel model;
 	final String[][] listeJoueurTest;
     
 	public Affichage() {
@@ -25,7 +27,9 @@ public class Affichage extends JFrame{
 	    String[] listeColonne = new String[]{"Nom", "Équipe", "Position", "But", "Assist."};
 		listeJoueurTest = creationListeJoueur();
 	    tableJoueurs = new JTable(listeJoueurTest, listeColonne);
-	    
+		// model = new DefaultTableModel(listeJoueurTest, listeColonne);
+	    // tableJoueurs.setModel(model);
+
 		CreationAffichage();
 	}
 	
@@ -47,8 +51,8 @@ public class Affichage extends JFrame{
 		joueurRechercheJPanel.add(champRechercheMot);
 		champRechercheMot.setPreferredSize(new Dimension(150, 25));
 
-		add(joueurRechercheJPanel, BorderLayout.PAGE_START);
-		add(listeJoueurScroll, BorderLayout.PAGE_END);
+		this.add(joueurRechercheJPanel, BorderLayout.PAGE_START);
+		this.add(listeJoueurScroll, BorderLayout.PAGE_END);
 
 		champRechercheMot.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
@@ -62,20 +66,20 @@ public class Affichage extends JFrame{
 			}
 		});
 
-		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		pack();
-		setLocationRelativeTo(null);
+		this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		this.pack();
+		this.setLocationRelativeTo(null);
         this.setResizable(false);
     }
 
     public void listeJoueursUpdate(){
 		tableJoueurs = new JTable(rechercheListeJoueur(champRechercheMot.getText()),
 				new String[]{"Nom", "Équipe", "Position", "But", "Assist."});
+
 		remove(listeJoueurScroll);
 		listeJoueurScroll = new JScrollPane(tableJoueurs);
 		add(listeJoueurScroll, BorderLayout.PAGE_END);
 		validate();
-		pack();
 	}
 
 	public String[][] creationListeJoueur(){
@@ -117,13 +121,22 @@ public class Affichage extends JFrame{
 			if (joueurFiltre[0] != null)
 			{
 				if (joueurFiltre[0].toLowerCase().contains(charRecherche)) {
-					System.out.println(joueurFiltre[0]);
 					listeJoueurFiltre[iterateur] = joueurFiltre;
 					iterateur++;
 				}
 			}
 		}
 
-		return listeJoueurFiltre;
+		String[][] listeJoueurRetournee = new String[iterateur][];
+
+		iterateur = 0;
+		for (String[] joueur : listeJoueurFiltre){
+			if (joueur != null){
+				listeJoueurRetournee[iterateur] = joueur;
+			}
+			iterateur++;
+		}
+
+		return listeJoueurRetournee;
 	}
 }
