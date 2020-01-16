@@ -1,15 +1,18 @@
 package graphicalComponents;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 
 import gestionDonnees.GestionFichier;
+import gestionDonnees.GestionPool;
 import gestionDonnees.Joueur;
+import gestionDonnees.Pooler;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class Affichage extends JFrame{
@@ -20,7 +23,10 @@ public class Affichage extends JFrame{
 	DefaultTableModel model;
 	final String[][] listeJoueurTest;
 	JMenuBar barreMenu;
-    JMenu menuParam;
+    JMenu menuParamUtilisateur;
+    JMenu menuMenu;
+	JMenuItem creerNouveauPool;
+	GestionPool pool;
 
 	public Affichage() {
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,8 +57,23 @@ public class Affichage extends JFrame{
 		setLayout(new BorderLayout());
 
 		barreMenu = new JMenuBar();
-		menuParam = new JMenu("Paramètre Utilisateur");
-		barreMenu.add(menuParam);
+		menuParamUtilisateur = new JMenu("Paramètres Utilisateur");
+		menuMenu = new JMenu("Menu");
+		creerNouveauPool = new JMenuItem("Créer un nouveau Pool");
+
+		creerNouveauPool.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				initDataPool();
+				initAffichagePool();
+				repaint();
+				pack();
+			}
+		});
+
+		menuMenu.add(creerNouveauPool);
+		barreMenu.add(menuMenu);
+		barreMenu.add(menuParamUtilisateur);
 
 	    listeJoueurScroll = new JScrollPane(tableJoueurs);
 		tableJoueurs.setFillsViewportHeight(true);
@@ -62,7 +83,7 @@ public class Affichage extends JFrame{
 
 		setJMenuBar(barreMenu);
 		add(joueurRechercheJPanel, BorderLayout.PAGE_START);
-		add(listeJoueurScroll, BorderLayout.PAGE_END);
+		add(listeJoueurScroll, BorderLayout.CENTER);
 
 		champRechercheMot.getDocument().addDocumentListener(new DocumentListener() {
 			public void changedUpdate(DocumentEvent e) {
@@ -88,7 +109,7 @@ public class Affichage extends JFrame{
 
 		remove(listeJoueurScroll);
 		listeJoueurScroll = new JScrollPane(tableJoueurs);
-		add(listeJoueurScroll, BorderLayout.PAGE_END);
+		add(listeJoueurScroll, BorderLayout.CENTER);
 		validate();
 	}
 
@@ -148,5 +169,121 @@ public class Affichage extends JFrame{
 		}
 
 		return listeJoueurRetournee;
+	}
+
+	public void initDataPool(){
+		JTextField poolerUnTextField = new JTextField(5);
+		JTextField poolerDeuxTextField = new JTextField(5);
+		JTextField poolerTroisTextField = new JTextField(5);
+		JTextField poolerQuatreTextField = new JTextField(5);
+		JTextField poolerCinqTextField = new JTextField(5);
+		JTextField poolerSixTextField = new JTextField(5);
+		JTextField poolerSeptTextField = new JTextField(5);
+		JTextField poolerHuitTextField = new JTextField(5);
+		JPanel myPanel = new JPanel();
+		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+
+		myPanel.add(new JLabel("Pooler #1"));
+		myPanel.add(poolerUnTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #2"));
+		myPanel.add(poolerDeuxTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #3"));
+		myPanel.add(poolerTroisTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #4"));
+		myPanel.add(poolerQuatreTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #5"));
+		myPanel.add(poolerCinqTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #6"));
+		myPanel.add(poolerSixTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #7"));
+		myPanel.add(poolerSeptTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #8"));
+		myPanel.add(poolerHuitTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		int result = JOptionPane.showConfirmDialog(null, myPanel,
+				"Entrée le nom de chacun des poolers", JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.PLAIN_MESSAGE, null);
+		if (result == JOptionPane.OK_OPTION) {
+			ArrayList<Pooler> listePooler = new ArrayList<Pooler>();
+			listePooler.add(new Pooler(poolerUnTextField.getText()));
+			listePooler.add(new Pooler(poolerDeuxTextField.getText()));
+			listePooler.add(new Pooler(poolerTroisTextField.getText()));
+			listePooler.add(new Pooler(poolerQuatreTextField.getText()));
+			listePooler.add(new Pooler(poolerCinqTextField.getText()));
+			listePooler.add(new Pooler(poolerSixTextField.getText()));
+			listePooler.add(new Pooler(poolerSeptTextField.getText()));
+			listePooler.add(new Pooler(poolerHuitTextField.getText()));
+
+			pool = new GestionPool(listePooler);
+		}
+	}
+
+	public void initAffichagePool(){
+		if (pool != null) {
+			String[] listePoolerNom = pool.getListeNomPooler();
+			JPanel jPanelAllPooler = new JPanel();
+			JPanel jPanelUnPooler = new JPanel();
+			jPanelUnPooler.setLayout(new BoxLayout(jPanelUnPooler, BoxLayout.Y_AXIS));
+
+			for (int i = 0; i < 8; i++){
+				JScrollPane jScrollPaneJoueurDuPooler = new JScrollPane(
+						new JTable(arrayListJoueurToMatriceString(pool.getPooler(i).getPool()),
+								new String[]{"Nom", "Équipe", "Position", "But", "Assist."}));
+				jScrollPaneJoueurDuPooler.setPreferredSize(new Dimension(300, 50));
+
+				jPanelUnPooler.add(new JLabel(listePoolerNom[i]));
+				jPanelUnPooler.add(Box.createVerticalStrut(10));
+				jPanelUnPooler.add(jScrollPaneJoueurDuPooler);
+
+				jPanelAllPooler.add(jPanelUnPooler);
+			}
+
+			add(jPanelAllPooler, BorderLayout.EAST);
+		}
+	}
+
+	public String[][] arrayListJoueurToMatriceString(ArrayList<Joueur> _array){
+		int longueurArray = 0;
+		if (_array != null) longueurArray = _array.size();
+		String[][] matriceStringRetournee = new String[longueurArray][];
+
+		// "Nom", "Équipe", "Position", "But", "Assist."
+		for (int i = 0; i < matriceStringRetournee.length; i++){
+			for (int j = 0; j < 5; j++){
+				switch (j){
+					case 0 :
+						matriceStringRetournee[i][j] = _array.get(i).getNom();
+						break;
+					case 1 :
+						matriceStringRetournee[i][j] = _array.get(i).getEquipe();
+						break;
+					case 2 :
+						matriceStringRetournee[i][j] = _array.get(i).getPosition();
+						break;
+					case 3 :
+						matriceStringRetournee[i][j] = Integer.toString(_array.get(i).getButs());
+						break;
+					case 4 :
+						matriceStringRetournee[i][j] = Integer.toString(_array.get(i).getAssistances());
+						break;
+				}
+			}
+		}
+		return matriceStringRetournee;
 	}
 }
