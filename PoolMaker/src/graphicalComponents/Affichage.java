@@ -12,6 +12,8 @@ import gestionDonnees.Pooler;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
@@ -40,6 +42,8 @@ public class Affichage extends JFrame{
 		tableJoueurs = new JTable();
 		tableJoueurs.setModel(model);
 		tableJoueurs.setAutoCreateRowSorter(true);
+		tableJoueurs.setDefaultEditor(Object.class, null);
+		tableJoueurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
 		CreationAffichage();
 	}
@@ -75,7 +79,62 @@ public class Affichage extends JFrame{
 		barreMenu.add(menuMenu);
 		barreMenu.add(menuParamUtilisateur);
 
-	    listeJoueurScroll = new JScrollPane(tableJoueurs);
+		tableJoueurs.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JPopupMenu popupMenu = new JPopupMenu();
+				if (e.getButton() == 3){
+					JMenu anItem = new JMenu("Ajouter à ...");
+
+					if (pool != null) {
+						System.out.println(pool.getPooler(0).getPoolerPrenom());
+						JMenuItem menuItemPoolerUn = new JMenuItem(pool.getPooler(0).getPoolerPrenom());
+						JMenuItem menuItemPoolerDeux = new JMenuItem(pool.getPooler(1).getPoolerPrenom());
+						JMenuItem menuItemPoolerTrois = new JMenuItem(pool.getPooler(2).getPoolerPrenom());
+						JMenuItem menuItemPoolerQuatre = new JMenuItem(pool.getPooler(3).getPoolerPrenom());
+						JMenuItem menuItemPoolerCinq = new JMenuItem(pool.getPooler(4).getPoolerPrenom());
+						JMenuItem menuItemPoolerSix = new JMenuItem(pool.getPooler(5).getPoolerPrenom());
+						JMenuItem menuItemPoolerSept = new JMenuItem(pool.getPooler(6).getPoolerPrenom());
+						JMenuItem menuItemPoolerHuit = new JMenuItem(pool.getPooler(7).getPoolerPrenom());
+
+						menuItemPoolerUn.addActionListener(new ActionListener() {
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								// pool.getPooler(0).ajoutJoueurAuPool();
+							}
+						});
+
+						anItem.add(menuItemPoolerUn);
+						anItem.add(menuItemPoolerDeux);
+						anItem.add(menuItemPoolerTrois);
+						anItem.add(menuItemPoolerQuatre);
+						anItem.add(menuItemPoolerCinq);
+						anItem.add(menuItemPoolerSix);
+						anItem.add(menuItemPoolerSept);
+						anItem.add(menuItemPoolerHuit);
+					}
+
+					popupMenu.add(anItem);
+					popupMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+		});
+
+		listeJoueurScroll = new JScrollPane(tableJoueurs);
 		tableJoueurs.setFillsViewportHeight(true);
 		joueurRechercheJPanel.add(libelleRecherche);
 		joueurRechercheJPanel.add(champRechercheMot);
