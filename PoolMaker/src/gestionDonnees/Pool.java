@@ -3,11 +3,19 @@ package gestionDonnees;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class GestionPool {
+public class Pool {
     ArrayList<Pooler> arrayListePooler;
 
-    public GestionPool(ArrayList<Pooler> _arrayListePooler){
-        arrayListePooler = _arrayListePooler;
+    public Pool(ArrayList<Pooler> _arrayListePooler){
+        arrayListePooler = new ArrayList<>();
+
+        for (Pooler pooler : _arrayListePooler) {
+            if (pooler != null) { ajouterPooler(pooler); }
+        }
+    }
+
+    public void ajouterPooler(Pooler _pooler){
+        arrayListePooler.add(_pooler);
     }
 
     public String[] getListeNomPooler(){
