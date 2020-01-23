@@ -23,17 +23,25 @@ public class Affichage extends JFrame{
     JMenu menuMenu;
 	JMenuItem creerNouveauPool;
 	Pool pool;
+	JPanel jPanelAllPooler;
 
 	public Affichage() {
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    champRechercheMot = new JTextField();
 	    libelleRecherche = new JLabel("Rechercher un joueur");
 	    
-	    String[] listeColonne = new String[]{"Nom", "Équipe", "Position", "But", "Assist."};
+	    String[] listeColonne = new String[]{"Nom", "Équipe", "Pos.", "But", "Ass."};
 		model = new DefaultTableModel(creationMatriceJoueur(), listeColonne);
 
 		tableJoueurs = new JTable();
 		tableJoueurs.setModel(model);
+		for (int i = 0; i < 5; i++){
+			System.out.println("Avant le resize" + tableJoueurs.getColumnModel().getColumn(i).getWidth());
+			if (i == 0) { tableJoueurs.getColumnModel().getColumn(i).setMaxWidth(125); }
+			else { tableJoueurs.getColumnModel().getColumn(i).setMaxWidth(50); }
+			System.out.println("Après le resize" + tableJoueurs.getColumnModel().getColumn(i).getWidth());
+		}
+
 		tableJoueurs.setAutoCreateRowSorter(true);
 		tableJoueurs.setDefaultEditor(Object.class, null);
 		tableJoueurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -79,45 +87,19 @@ public class Affichage extends JFrame{
 					JMenu anItem = new JMenu("Ajouter à ...");
 
 					if (pool != null) {
-						System.out.println(pool.getPooler(0).getPoolerPrenom());
-						JMenuItem menuItemPoolerUn = new JMenuItem(pool.getPooler(0).getPoolerPrenom());
-						JMenuItem menuItemPoolerDeux = new JMenuItem(pool.getPooler(1).getPoolerPrenom());
-						JMenuItem menuItemPoolerTrois = new JMenuItem(pool.getPooler(2).getPoolerPrenom());
-						JMenuItem menuItemPoolerQuatre = new JMenuItem(pool.getPooler(3).getPoolerPrenom());
-						JMenuItem menuItemPoolerCinq = new JMenuItem(pool.getPooler(4).getPoolerPrenom());
-						JMenuItem menuItemPoolerSix = new JMenuItem(pool.getPooler(5).getPoolerPrenom());
-						JMenuItem menuItemPoolerSept = new JMenuItem(pool.getPooler(6).getPoolerPrenom());
-						JMenuItem menuItemPoolerHuit = new JMenuItem(pool.getPooler(7).getPoolerPrenom());
+						for (int i = 0; i <= 7; i++){
+							final int poolerId = i;
+							JMenuItem jMenuItem = new JMenuItem(pool.getPooler(poolerId).getPoolerPrenom());
 
-						menuItemPoolerUn.addActionListener(menuItemPoolerUnActionListener -> {
-							pool.getPooler(0).ajoutJoueurAuPool(joueurSelectionner);
-							String[][] stringMatriceJoueurPooler = Pooler.arrayListJoueurToStringMatrice(pool.getPooler(0).getPool());
+							jMenuItem.addActionListener(menuItemPoolerUnActionListener -> {
+								pool.getPooler(poolerId).ajoutJoueurAuPool(joueurSelectionner);
+								String[][] stringMatriceJoueurPooler = Pooler.arrayListJoueurToStringMatrice(pool.getPooler(0).getPool());
 
-							refreshAffichagePool();
-
-							/* tableJoueurs = new JTable(stringMatriceJoueurPooler,
-									new String[]{"Nom", "Équipe", "Position", "But", "Assist."});
-
-							tableJoueurs.setAutoCreateRowSorter(true);
-							tableJoueurs.setDefaultEditor(Object.class, null);
-							tableJoueurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-
-							remove(listeJoueurScroll);
-							listeJoueurScroll = new JScrollPane(tableJoueurs);
-							add(listeJoueurScroll, BorderLayout.CENTER);
-							validate();*/
-						});
-
-						anItem.add(menuItemPoolerUn);
-						anItem.add(menuItemPoolerDeux);
-						anItem.add(menuItemPoolerTrois);
-						anItem.add(menuItemPoolerQuatre);
-						anItem.add(menuItemPoolerCinq);
-						anItem.add(menuItemPoolerSix);
-						anItem.add(menuItemPoolerSept);
-						anItem.add(menuItemPoolerHuit);
+								refreshAffichagePool();
+							});
+							anItem.add(jMenuItem);
+						}
 					}
-
 					popupMenu.add(anItem);
 					popupMenu.show(e.getComponent(), e.getX(), e.getY());
 				}
@@ -168,7 +150,7 @@ public class Affichage extends JFrame{
 
     public void listeJoueursUpdate(){
 		tableJoueurs = new JTable(rechercheListeJoueur(champRechercheMot.getText()),
-				new String[]{"Nom", "Équipe", "Position", "But", "Assist."});
+				new String[]{"Nom", "Équipe", "Pos.", "But", "Ass."});
 		rafraichissementAffichageListeJoueur();
 	}
 
@@ -294,9 +276,9 @@ public class Affichage extends JFrame{
 	}
 
 	public void refreshAffichagePool(){
-		JPanel jPanelAllPooler = new JPanel();
+		if (jPanelAllPooler != null) remove(jPanelAllPooler);
+		jPanelAllPooler = new JPanel();
 		ArrayList<JPanel> arrayListeJPanel = new ArrayList<>();
-		remove(jPanelAllPooler);
 		if (arrayListeJPanel.size() > 0) {
 			for (JPanel jPanel : arrayListeJPanel) {
 				jPanelAllPooler.remove(jPanel);
@@ -314,9 +296,9 @@ public class Affichage extends JFrame{
 		for (int i = 0; i < 8; i++){
 			JPanel jPanelUnPooler = new JPanel();
 			JScrollPane jScrollPaneJoueurDuPooler = new JScrollPane(
-					new JTable(Pooler.arrayListJoueurToStringMatrice(pool.getPooler(0).getPool()),
+					new JTable(Pooler.arrayListJoueurToStringMatrice(pool.getPooler(i).getPool()),
 							new String[]{"Nom", "Équipe", "Position", "But", "Assist."}));
-			jScrollPaneJoueurDuPooler.setPreferredSize(new Dimension(300, 50));
+			jScrollPaneJoueurDuPooler.setPreferredSize(new Dimension(500, 50));
 
 			jPanelUnPooler.add(new JLabel(listePoolerNom[i]));
 			jPanelUnPooler.add(Box.createVerticalStrut(10));
