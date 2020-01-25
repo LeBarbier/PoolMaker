@@ -1,12 +1,15 @@
 package graphicalComponents;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 
-import gestionDonnees.GestionFichier;
-import gestionDonnees.Joueur;
+import gestionDonnees.*;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class Affichage extends JFrame{
@@ -14,16 +17,35 @@ public class Affichage extends JFrame{
     JScrollPane listeJoueurScroll;
     JLabel libelleRecherche;
     JTable tableJoueurs;
-    
+	DefaultTableModel model;
+	JMenuBar barreMenu;
+    JMenu menuParamUtilisateur;
+    JMenu menuMenu;
+	JMenuItem creerNouveauPool;
+	Pool pool;
+	JPanel jPanelAllPooler;
+
 	public Affichage() {
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    champRechercheMot = new JTextField();
 	    libelleRecherche = new JLabel("Rechercher un joueur");
 	    
-	    String[] listeColonne = new String[]{"Nom", "Équipe", "Position", "But", "Assistance"};
-	    
-	    tableJoueurs = new JTable(creationListeJoueur(), listeColonne);
-	    
+	    String[] listeColonne = new String[]{"Nom", "Équipe", "Pos.", "But", "Ass."};
+		model = new DefaultTableModel(creationMatriceJoueur(), listeColonne);
+
+		tableJoueurs = new JTable();
+		tableJoueurs.setModel(model);
+		for (int i = 0; i < 5; i++){
+			System.out.println("Avant le resize" + tableJoueurs.getColumnModel().getColumn(i).getWidth());
+			if (i == 0) { tableJoueurs.getColumnModel().getColumn(i).setMaxWidth(125); }
+			else { tableJoueurs.getColumnModel().getColumn(i).setMaxWidth(50); }
+			System.out.println("Après le resize" + tableJoueurs.getColumnModel().getColumn(i).getWidth());
+		}
+
+		tableJoueurs.setAutoCreateRowSorter(true);
+		tableJoueurs.setDefaultEditor(Object.class, null);
+		tableJoueurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
 		CreationAffichage();
 	}
 	
@@ -33,50 +55,127 @@ public class Affichage extends JFrame{
 		ex.setVisible(true);
 	}
 	
-
 	public void CreationAffichage() {
-		setTitle("Dictio");
-        setSize(900, 500);
-        
-        libelleRecherche.setBounds(10, 1, 270, 25);
-        champRechercheMot.setBounds(5, 25, 270, 30);
-	    listeJoueurScroll = new JScrollPane(tableJoueurs);
-        listeJoueurScroll.setLayout(null);
-        listeJoueurScroll.setBounds(5, 65, 880, 400);
-        // listeJoueurScroll.add();
-        // listeJoueurScroll.showFrame();
-        // listeJoueurScroll.setViewportView(tableJoueurs);
+		JPanel joueurRechercheJPanel = new JPanel();
 
-        getContentPane().setLayout(null);
-        getContentPane().add(libelleRecherche);
-        getContentPane().add(champRechercheMot);
-        getContentPane().add(listeJoueurScroll);
-        
+		setTitle("Pool maker");
+		setLayout(new BorderLayout());
+
+		barreMenu = new JMenuBar();
+		menuParamUtilisateur = new JMenu("Paramètres Utilisateur");
+		menuMenu = new JMenu("Menu");
+		creerNouveauPool = new JMenuItem("Créer un nouveau Pool");
+
+		creerNouveauPool.addActionListener(e -> {
+			initDataPool();
+			refreshAffichagePool();
+		});
+
+		menuMenu.add(creerNouveauPool);
+		barreMenu.add(menuMenu);
+		barreMenu.add(menuParamUtilisateur);
+
+		tableJoueurs.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JPopupMenu popupMenu = new JPopupMenu();
+				Joueur joueurSelectionner = GestionJoueur.findJoueurByName(
+												tableJoueurs.getValueAt(tableJoueurs.getSelectedRow(),
+												0).toString(), GestionFichier.obtenirListeJoueurDeData());
+
+				if (e.getButton() == 3){
+					JMenu anItem = new JMenu("Ajouter à ...");
+
+					if (pool != null) {
+						for (int i = 0; i <= 7; i++){
+							final int poolerId = i;
+							JMenuItem jMenuItem = new JMenuItem(pool.getPooler(poolerId).getPoolerPrenom());
+
+							jMenuItem.addActionListener(menuItemPoolerUnActionListener -> {
+								pool.getPooler(poolerId).ajoutJoueurAuPool(joueurSelectionner);
+								String[][] stringMatriceJoueurPooler = Pooler.arrayListJoueurToStringMatrice(pool.getPooler(0).getPool());
+
+								refreshAffichagePool();
+							});
+							anItem.add(jMenuItem);
+						}
+					}
+					popupMenu.add(anItem);
+					popupMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+
+			}
+			@Override
+			public void mouseReleased(MouseEvent e) {
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+		});
+
+		listeJoueurScroll = new JScrollPane(tableJoueurs);
+		tableJoueurs.setFillsViewportHeight(true);
+		joueurRechercheJPanel.add(libelleRecherche);
+		joueurRechercheJPanel.add(champRechercheMot);
+		champRechercheMot.setPreferredSize(new Dimension(150, 25));
+
+		setJMenuBar(barreMenu);
+		add(joueurRechercheJPanel, BorderLayout.PAGE_START);
+		add(listeJoueurScroll, BorderLayout.CENTER);
+
+		champRechercheMot.getDocument().addDocumentListener(new DocumentListener() {
+			public void changedUpdate(DocumentEvent e) {
+				listeJoueursUpdate();
+			}
+			public void removeUpdate(DocumentEvent e) {
+				listeJoueursUpdate();
+			}
+			public void insertUpdate(DocumentEvent e) {
+				listeJoueursUpdate();
+			}
+		});
+
+		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		refreshAffichagePool();
+		this.setLocationRelativeTo(null);
         this.setResizable(false);
     }
 
-	public String[][] creationListeJoueur(){
-	    Joueur[] listeJoueur = GestionFichier.obtenirListeJoueur();
-	    String[][] matriceInfoJoueur = new String[listeJoueur.length][5];
-	    
-	    for(int row = 2; row < listeJoueur.length; row++){
-	    	if (listeJoueur[row] != null) {
+    public void listeJoueursUpdate(){
+		tableJoueurs = new JTable(rechercheListeJoueur(champRechercheMot.getText()),
+				new String[]{"Nom", "Équipe", "Pos.", "But", "Ass."});
+		rafraichissementAffichageListeJoueur();
+	}
+
+	public String[][] creationMatriceJoueur(){
+		ArrayList<Joueur> listeJoueur = GestionFichier.obtenirListeJoueurDeData();
+	    String[][] matriceInfoJoueur = new String[listeJoueur.size()][5];
+
+	    for(int row = 2; row < listeJoueur.size(); row++){
+	    	if (listeJoueur.get(row) != null) {
 		    	for (int col = 0; col <= 4; col++) {
 		    		switch(col) {
 		    		  case 0: // Nom
-		    			  matriceInfoJoueur[row-2][col] = listeJoueur[row].getNom();
+		    			  matriceInfoJoueur[row-2][col] = listeJoueur.get(row).getNom();
 		    			  	break;
 		    		  case 1: // Équipe
-		    			  matriceInfoJoueur[row-2][col] = listeJoueur[row].getEquipe();
+		    			  matriceInfoJoueur[row-2][col] = listeJoueur.get(row).getEquipe();
 		    			  	break;
 		    		  case 2: // Position
-		    			  matriceInfoJoueur[row-2][col] = listeJoueur[row].getPosition();
+		    			  matriceInfoJoueur[row-2][col] = listeJoueur.get(row).getPosition();
 			    		    break;
 		    		  case 3: // Buts
-		    			  matriceInfoJoueur[row-2][col] = Integer.toString(listeJoueur[row].getButs());
+		    			  matriceInfoJoueur[row-2][col] = Integer.toString(listeJoueur.get(row).getButs());
 			    		    break;
 		    		  case 4: // Assistances
-		    			  matriceInfoJoueur[row-2][col] = Integer.toString(listeJoueur[row].getAssistances());
+		    			  matriceInfoJoueur[row-2][col] = Integer.toString(listeJoueur.get(row).getAssistances());
 			    		    break;
 		    		  default:
 		    		}
@@ -84,5 +183,179 @@ public class Affichage extends JFrame{
 	    	}
 	    }	    
 	    return matriceInfoJoueur;
-	}	
+	}
+
+	public String[][] rechercheListeJoueur(String charRecherche){
+		String[][] matriceJoueur = creationMatriceJoueur();
+		String[][] listeJoueurFiltre = new String[matriceJoueur.length][];
+		int iterateur = 0;
+
+		for (String[] joueurFiltre : matriceJoueur){
+			if (joueurFiltre[0] != null)
+			{
+				if (joueurFiltre[0].toLowerCase().contains(charRecherche)) {
+					listeJoueurFiltre[iterateur] = joueurFiltre;
+					iterateur++;
+				}
+			}
+		}
+
+		String[][] listeJoueurRetournee = new String[iterateur][];
+
+		iterateur = 0;
+		for (String[] joueur : listeJoueurFiltre){
+			if (joueur != null){
+				listeJoueurRetournee[iterateur] = joueur;
+			}
+			iterateur++;
+		}
+
+		return listeJoueurRetournee;
+	}
+
+	public void initDataPool(){
+		JTextField poolerUnTextField = new JTextField(5);
+		JTextField poolerDeuxTextField = new JTextField(5);
+		JTextField poolerTroisTextField = new JTextField(5);
+		JTextField poolerQuatreTextField = new JTextField(5);
+		JTextField poolerCinqTextField = new JTextField(5);
+		JTextField poolerSixTextField = new JTextField(5);
+		JTextField poolerSeptTextField = new JTextField(5);
+		JTextField poolerHuitTextField = new JTextField(5);
+		JPanel myPanel = new JPanel();
+		myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.Y_AXIS));
+
+		myPanel.add(new JLabel("Pooler #1"));
+		myPanel.add(poolerUnTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #2"));
+		myPanel.add(poolerDeuxTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #3"));
+		myPanel.add(poolerTroisTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #4"));
+		myPanel.add(poolerQuatreTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #5"));
+		myPanel.add(poolerCinqTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #6"));
+		myPanel.add(poolerSixTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #7"));
+		myPanel.add(poolerSeptTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		myPanel.add(new JLabel("Pooler #8"));
+		myPanel.add(poolerHuitTextField);
+		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+
+		int result = JOptionPane.showConfirmDialog(null, myPanel,
+				"Entrée le nom de chacun des poolers", JOptionPane.OK_CANCEL_OPTION,
+				JOptionPane.PLAIN_MESSAGE, null);
+		if (result == JOptionPane.OK_OPTION) {
+			ArrayList<Pooler> listePoolerCreation = new ArrayList<>();
+			listePoolerCreation.add(new Pooler(poolerUnTextField.getText()));
+			listePoolerCreation.add(new Pooler(poolerDeuxTextField.getText()));
+			listePoolerCreation.add(new Pooler(poolerTroisTextField.getText()));
+			listePoolerCreation.add(new Pooler(poolerQuatreTextField.getText()));
+			listePoolerCreation.add(new Pooler(poolerCinqTextField.getText()));
+			listePoolerCreation.add(new Pooler(poolerSixTextField.getText()));
+			listePoolerCreation.add(new Pooler(poolerSeptTextField.getText()));
+			listePoolerCreation.add(new Pooler(poolerHuitTextField.getText()));
+
+			pool = new Pool(listePoolerCreation);
+		}
+	}
+
+	public void refreshAffichagePool(){
+		if (jPanelAllPooler != null) remove(jPanelAllPooler);
+		jPanelAllPooler = new JPanel();
+		ArrayList<JPanel> arrayListeJPanel = new ArrayList<>();
+		if (arrayListeJPanel.size() > 0) {
+			for (JPanel jPanel : arrayListeJPanel) {
+				jPanelAllPooler.remove(jPanel);
+			}
+		}
+
+		if (pool == null) {
+			repaint();
+			pack();
+			return;
+		}
+
+		String[] listePoolerNom = pool.getListeNomPooler();
+
+		for (int i = 0; i < 8; i++){
+			JPanel jPanelUnPooler = new JPanel();
+			JScrollPane jScrollPaneJoueurDuPooler = new JScrollPane(
+					new JTable(Pooler.arrayListJoueurToStringMatrice(pool.getPooler(i).getPool()),
+							new String[]{"Nom", "Équipe", "Position", "But", "Assist."}));
+			jScrollPaneJoueurDuPooler.setPreferredSize(new Dimension(500, 50));
+
+			jPanelUnPooler.add(new JLabel(listePoolerNom[i]));
+			jPanelUnPooler.add(Box.createVerticalStrut(10));
+			jPanelUnPooler.add(jScrollPaneJoueurDuPooler);
+
+			arrayListeJPanel.add(jPanelUnPooler);
+		}
+
+		for (JPanel jPanel : arrayListeJPanel) {
+			jPanelAllPooler.add(jPanel);
+		}
+		jPanelAllPooler.setLayout(new BoxLayout(jPanelAllPooler, BoxLayout.Y_AXIS));
+
+		add(jPanelAllPooler, BorderLayout.EAST);
+		validate();
+		repaint();
+		pack();
+	}
+
+	public String[][] arrayListJoueurToMatriceString(ArrayList<Joueur> _array){
+		int longueurArray = 0;
+		if (_array != null) longueurArray = _array.size();
+		String[][] matriceStringRetournee = new String[longueurArray][];
+
+		// "Nom", "Équipe", "Position", "But", "Assist."
+		for (int i = 0; i < matriceStringRetournee.length; i++){
+			for (int j = 0; j < 5; j++){
+				switch (j){
+					case 0 :
+						matriceStringRetournee[i][j] = _array.get(i).getNom();
+						break;
+					case 1 :
+						matriceStringRetournee[i][j] = _array.get(i).getEquipe();
+						break;
+					case 2 :
+						matriceStringRetournee[i][j] = _array.get(i).getPosition();
+						break;
+					case 3 :
+						matriceStringRetournee[i][j] = Integer.toString(_array.get(i).getButs());
+						break;
+					case 4 :
+						matriceStringRetournee[i][j] = Integer.toString(_array.get(i).getAssistances());
+						break;
+				}
+			}
+		}
+		return matriceStringRetournee;
+	}
+
+	public void rafraichissementAffichageListeJoueur(){
+		tableJoueurs.setAutoCreateRowSorter(true);
+		tableJoueurs.setDefaultEditor(Object.class, null);
+		tableJoueurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+		remove(listeJoueurScroll);
+		listeJoueurScroll = new JScrollPane(tableJoueurs);
+		add(listeJoueurScroll, BorderLayout.CENTER);
+		validate();
+	}
 }
