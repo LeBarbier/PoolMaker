@@ -12,7 +12,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
-public class Affichage extends JFrame{
+public class Vue extends JFrame{
     JTextField champRechercheMot;
     JScrollPane listeJoueurScroll;
     JLabel libelleRecherche;
@@ -25,7 +25,7 @@ public class Affichage extends JFrame{
 	Pool pool;
 	JPanel jPanelAllPooler;
 
-	public Affichage() {
+	public Vue() {
 	    this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    champRechercheMot = new JTextField();
 	    libelleRecherche = new JLabel("Rechercher un joueur");
@@ -47,12 +47,6 @@ public class Affichage extends JFrame{
 		tableJoueurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
 		CreationAffichage();
-	}
-	
-	public static void main(String[] args) {
-		Affichage ex = new Affichage();
-
-		ex.setVisible(true);
 	}
 	
 	public void CreationAffichage() {
@@ -297,7 +291,7 @@ public class Affichage extends JFrame{
 			JPanel jPanelUnPooler = new JPanel();
 			JScrollPane jScrollPaneJoueurDuPooler = new JScrollPane(
 					new JTable(Pooler.arrayListJoueurToStringMatrice(pool.getPooler(i).getPool()),
-							new String[]{"Nom", "Équipe", "Position", "But", "Assist."}));
+							new String[]{"Nom", "Équipe", "Pos.", "But", "Ass."}));
 			jScrollPaneJoueurDuPooler.setPreferredSize(new Dimension(500, 50));
 
 			jPanelUnPooler.add(new JLabel(listePoolerNom[i]));
@@ -323,7 +317,7 @@ public class Affichage extends JFrame{
 		if (_array != null) longueurArray = _array.size();
 		String[][] matriceStringRetournee = new String[longueurArray][];
 
-		// "Nom", "Équipe", "Position", "But", "Assist."
+		// "Nom", "Équipe", "Pos.", "But", "Ass."
 		for (int i = 0; i < matriceStringRetournee.length; i++){
 			for (int j = 0; j < 5; j++){
 				switch (j){
