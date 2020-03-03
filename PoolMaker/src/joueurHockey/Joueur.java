@@ -1,8 +1,8 @@
-package gestionDonnees;
+package joueurHockey;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Joueur {
+public abstract class Joueur {
 	private static final AtomicInteger count = new AtomicInteger(-1);
 	private final int joueurID;
 	private final String nom;

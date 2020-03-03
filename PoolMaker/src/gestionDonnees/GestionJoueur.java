@@ -1,5 +1,7 @@
 package gestionDonnees;
 
+import joueurHockey.Joueur;
+
 import java.util.ArrayList;
 
 public class GestionJoueur {

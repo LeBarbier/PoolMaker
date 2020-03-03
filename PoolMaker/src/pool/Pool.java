@@ -1,6 +1,5 @@
-package gestionDonnees;
+package pool;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Pool {

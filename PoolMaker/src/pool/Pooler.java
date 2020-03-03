@@ -1,4 +1,6 @@
-package gestionDonnees;
+package pool;
+
+import joueurHockey.Joueur;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;

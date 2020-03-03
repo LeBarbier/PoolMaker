@@ -1,5 +1,9 @@
 package gestionDonnees;
 
+import joueurHockey.Gardien;
+import joueurHockey.Joueur;
+import joueurHockey.Patineur;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -21,11 +25,18 @@ public class GestionFichier {
 				if (ligneCount > 1) {
 					String[] infoJoueur = ligne.split(",", 17);
 					if (infoJoueur.length > 0)
-						listeJoueurRetournee.add(new Joueur(infoJoueur[0],
-															infoJoueur[1],
-															infoJoueur[2],
-															Integer.parseInt(infoJoueur[4]),
-															Integer.parseInt(infoJoueur[5])));
+						if (infoJoueur[2].equalsIgnoreCase("G"))
+							listeJoueurRetournee.add(new Gardien(infoJoueur[0],
+																infoJoueur[1],
+																infoJoueur[2],
+																Integer.parseInt(infoJoueur[4]),
+																Integer.parseInt(infoJoueur[5])));
+						else
+							listeJoueurRetournee.add(new Patineur(infoJoueur[0],
+																infoJoueur[1],
+																infoJoueur[2],
+																Integer.parseInt(infoJoueur[4]),
+																Integer.parseInt(infoJoueur[5])));
 				}
 				ligneCount++;
 			}

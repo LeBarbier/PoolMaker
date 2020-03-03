@@ -5,6 +5,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 import gestionDonnees.*;
+import joueurHockey.Joueur;
+import pool.Pool;
+import pool.Pooler;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -36,10 +39,8 @@ public class Vue extends JFrame{
 		tableJoueurs = new JTable();
 		tableJoueurs.setModel(model);
 		for (int i = 0; i < 5; i++){
-			System.out.println("Avant le resize" + tableJoueurs.getColumnModel().getColumn(i).getWidth());
 			if (i == 0) { tableJoueurs.getColumnModel().getColumn(i).setMaxWidth(125); }
 			else { tableJoueurs.getColumnModel().getColumn(i).setMaxWidth(50); }
-			System.out.println("Après le resize" + tableJoueurs.getColumnModel().getColumn(i).getWidth());
 		}
 
 		tableJoueurs.setAutoCreateRowSorter(true);
@@ -285,14 +286,22 @@ public class Vue extends JFrame{
 			return;
 		}
 
+		JTable tableJoueurPooler;
 		String[] listePoolerNom = pool.getListeNomPooler();
 
 		for (int i = 0; i < 8; i++){
 			JPanel jPanelUnPooler = new JPanel();
-			JScrollPane jScrollPaneJoueurDuPooler = new JScrollPane(
-					new JTable(Pooler.arrayListJoueurToStringMatrice(pool.getPooler(i).getPool()),
-							new String[]{"Nom", "Équipe", "Pos.", "But", "Ass."}));
-			jScrollPaneJoueurDuPooler.setPreferredSize(new Dimension(500, 50));
+
+			tableJoueurPooler = new JTable(Pooler.arrayListJoueurToStringMatrice(pool.getPooler(i).getPool()),
+					new String[]{"Nom", "Équipe", "Pos.", "But", "Ass."});
+
+			for (int j = 0; j < 5; j++){
+				if (j == 0) { tableJoueurPooler.getColumnModel().getColumn(j).setMaxWidth(125); }
+				else { tableJoueurPooler.getColumnModel().getColumn(j).setMaxWidth(50); }
+			}
+
+			JScrollPane jScrollPaneJoueurDuPooler = new JScrollPane(tableJoueurPooler);
+			jScrollPaneJoueurDuPooler.setPreferredSize(new Dimension(250, 50));
 
 			jPanelUnPooler.add(new JLabel(listePoolerNom[i]));
 			jPanelUnPooler.add(Box.createVerticalStrut(10));
@@ -350,6 +359,7 @@ public class Vue extends JFrame{
 		remove(listeJoueurScroll);
 		listeJoueurScroll = new JScrollPane(tableJoueurs);
 		add(listeJoueurScroll, BorderLayout.CENTER);
+		listeJoueurScroll.setPreferredSize(new Dimension(250, 500));
 		validate();
 	}
 }
