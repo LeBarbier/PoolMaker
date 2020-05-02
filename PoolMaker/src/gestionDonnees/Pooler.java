@@ -1,5 +1,7 @@
 package gestionDonnees;
 
+import joueur.Joueur;
+
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -29,6 +31,7 @@ public class Pooler {
 
     public void ajoutJoueurAuPool(Joueur _joueur){
         listeArrayJoueur.add(_joueur);
+        Pool.getInstance().choisirJoueur(_joueur.getJoueurID());
     }
 
     public static String[][] arrayListJoueurToStringMatrice(ArrayList<Joueur> _arrayListAModifier){
