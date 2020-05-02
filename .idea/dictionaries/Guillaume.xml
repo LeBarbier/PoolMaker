@@ -1,6 +1,7 @@
 <component name="ProjectDictionaryState">
   <dictionary name="Guillaume">
     <words>
+      <w>abstraite</w>
       <w>affichage</w>
       <w>ainsi</w>
       <w>ajout</w>
@@ -8,7 +9,9 @@
       <w>après</w>
       <w>assistances</w>
       <w>avant</w>
+      <w>changement</w>
       <w>choix</w>
+      <w>classe</w>
       <w>clic</w>
       <w>codé</w>
       <w>colonne</w>
@@ -25,6 +28,7 @@
       <w>filtre</w>
       <w>fois</w>
       <w>fournit</w>
+      <w>gardien</w>
       <w>gestion</w>
       <w>huit</w>
       <w>iterateur</w>
@@ -41,6 +45,7 @@
       <w>obtenir</w>
       <w>panneau</w>
       <w>parametre</w>
+      <w>patineur</w>
       <w>permet</w>
       <w>pooler</w>
       <w>poolers</w>
@@ -50,6 +55,7 @@
       <w>utilisateur</w>
       <w>veut</w>
       <w>équipe</w>
+      <w>étendent</w>
     </words>
   </dictionary>
 </component>

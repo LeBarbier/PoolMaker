@@ -2,6 +2,8 @@ package joueur;
 
 import joueur.Joueur;
 
+import joueurHockey.Joueur;
+
 import java.util.ArrayList;
 
 public class GestionJoueur {
