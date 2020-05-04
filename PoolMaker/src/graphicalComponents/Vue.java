@@ -1,13 +1,12 @@
 package graphicalComponents;
+import joueur.Joueur;
+import pool.Pool;
+import pool.Pooler;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
-
-import gestionDonnees.*;
-import joueurHockey.Joueur;
-import pool.Pool;
-import pool.Pooler;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

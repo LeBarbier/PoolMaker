@@ -1,6 +1,7 @@
 package pool;
 
 import java.util.ArrayList;
+import gestionDonnees.GestionFichier;
 
 public class Pool {
     ArrayList<Pooler> arrayListePooler;
