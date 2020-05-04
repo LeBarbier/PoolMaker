@@ -1,5 +1,7 @@
 package graphicalComponents;
-import joueur.Joueur;
+import gestionDonnees.GestionFichier;
+import gestionDonnees.GestionJoueur;
+import joueurHockey.Joueur;
 import pool.Pool;
 import pool.Pooler;
 

@@ -2,6 +2,7 @@ package pool;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import joueurHockey.Joueur;
 
 public class Pooler {
     private static final AtomicInteger count = new AtomicInteger(-1);

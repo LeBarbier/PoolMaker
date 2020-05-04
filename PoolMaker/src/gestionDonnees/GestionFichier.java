@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class GestionFichier {
 	public static ArrayList<Joueur> obtenirListeJoueurDeData() {
-		File fichier = new File(Paths.get("PoolMaker/data/playerData") + "\\18-19.csv");
+		File fichier = new File(Paths.get("data/playerData") + "\\18-19.csv");
 		BufferedReader br;
 		ArrayList<Joueur> listeJoueurRetournee = new ArrayList<Joueur>();
 		int ligneCount = 0;
