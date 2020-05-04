@@ -1,4 +1,6 @@
-package gestionDonnees;
+package joueur;
+
+import joueur.Joueur;
 
 import joueurHockey.Joueur;
 
