@@ -165,10 +165,10 @@ public class Vue extends JFrame{
 		    			  matriceInfoJoueur[row-2][col] = listeJoueur.get(row).getPosition();
 			    		    break;
 		    		  case 3: // Buts
-		    			  matriceInfoJoueur[row-2][col] = Integer.toString(listeJoueur.get(row).getButs());
+		    			  matriceInfoJoueur[row-2][col] = String.format("%02d", (listeJoueur.get(row).getButs()));
 			    		    break;
 		    		  case 4: // Assistances
-		    			  matriceInfoJoueur[row-2][col] = Integer.toString(listeJoueur.get(row).getAssistances());
+		    			  matriceInfoJoueur[row-2][col] = String.format("%02d", (listeJoueur.get(row).getAssistances()));
 			    		    break;
 		    		  default:
 		    		}
