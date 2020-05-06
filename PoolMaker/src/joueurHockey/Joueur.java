@@ -1,5 +1,6 @@
 package joueurHockey;
 
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Joueur {
@@ -10,6 +11,7 @@ public abstract class Joueur {
 	private final String position;
 	private final int buts;
 	private final int assistances;
+	private boolean choisit;
 
 	public Joueur(String _nom,
 					String _equipe,
@@ -22,6 +24,7 @@ public abstract class Joueur {
 		buts = _buts;
 		assistances = _assistances;
 		joueurID = count.incrementAndGet();
+		choisit = false;
 	}
 	public int getButs() {
 		return buts;
@@ -37,6 +40,12 @@ public abstract class Joueur {
 	}
 	public String getPosition() {
 		return position;
+	}
+	public boolean getChoisit() {
+		return choisit;
+	}
+	public void setChoisit(boolean choisit) {
+		this.choisit = choisit;
 	}
 	public int getJoueurID() { return joueurID; }
 }

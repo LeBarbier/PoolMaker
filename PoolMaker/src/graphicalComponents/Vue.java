@@ -1,6 +1,5 @@
 package graphicalComponents;
 import gestionDonnees.GestionFichier;
-import gestionDonnees.GestionJoueur;
 import joueurHockey.Joueur;
 import pool.Pool;
 import pool.Pooler;
@@ -75,9 +74,7 @@ public class Vue extends JFrame{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				JPopupMenu popupMenu = new JPopupMenu();
-				Joueur joueurSelectionner = GestionJoueur.findJoueurByName(
-												tableJoueurs.getValueAt(tableJoueurs.getSelectedRow(),
-												0).toString(), GestionFichier.obtenirListeJoueurDeData());
+				Joueur joueurSelectionner = Pool.getInstance().findJoueurByName(tableJoueurs.getValueAt(tableJoueurs.getSelectedRow(),0).toString());
 
 				if (e.getButton() == 3){
 					JMenu anItem = new JMenu("Ajouter à ...");
@@ -89,7 +86,7 @@ public class Vue extends JFrame{
 
 							jMenuItem.addActionListener(menuItemPoolerUnActionListener -> {
 								pool.getPooler(poolerId).ajoutJoueurAuPool(joueurSelectionner);
-								String[][] stringMatriceJoueurPooler = Pooler.arrayListJoueurToStringMatrice(pool.getPooler(0).getPool());
+								// String[][] stringMatriceJoueurPooler = Pooler.arrayListJoueurToStringMatrice(pool.getPooler(0).getPool());
 
 								refreshAffichagePool();
 							});
@@ -257,7 +254,7 @@ public class Vue extends JFrame{
 				"Entrée le nom de chacun des poolers", JOptionPane.OK_CANCEL_OPTION,
 				JOptionPane.PLAIN_MESSAGE, null);
 		if (result == JOptionPane.OK_OPTION) {
-			ArrayList<Pooler> listePoolerCreation = new ArrayList<>();
+			ArrayList<Pooler> listePoolerCreation = Pool.getInstance().arrayListePooler;
 			listePoolerCreation.add(new Pooler(poolerUnTextField.getText()));
 			listePoolerCreation.add(new Pooler(poolerDeuxTextField.getText()));
 			listePoolerCreation.add(new Pooler(poolerTroisTextField.getText()));
@@ -267,7 +264,7 @@ public class Vue extends JFrame{
 			listePoolerCreation.add(new Pooler(poolerSeptTextField.getText()));
 			listePoolerCreation.add(new Pooler(poolerHuitTextField.getText()));
 
-			pool = new Pool(listePoolerCreation);
+			pool = Pool.getInstance();
 		}
 	}
 
@@ -282,6 +279,7 @@ public class Vue extends JFrame{
 		}
 
 		if (pool == null) {
+			pool = Pool.getInstance();
 			repaint();
 			pack();
 			return;
@@ -290,7 +288,7 @@ public class Vue extends JFrame{
 		JTable tableJoueurPooler;
 		String[] listePoolerNom = pool.getListeNomPooler();
 
-		for (int i = 0; i < 8; i++){
+		for (int i = 0; i < pool.arrayListePooler.size(); i++){
 			JPanel jPanelUnPooler = new JPanel();
 
 			tableJoueurPooler = new JTable(Pooler.arrayListJoueurToStringMatrice(pool.getPooler(i).getPool()),

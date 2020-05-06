@@ -1,9 +1,8 @@
-package gestionDonnees;
-
-import joueur.Joueur;
+package pool;
 
 import java.util.ArrayList;
 import gestionDonnees.GestionFichier;
+import joueurHockey.Joueur;
 
 public class Pool {
     private static Pool single_instance = null;
@@ -82,6 +81,20 @@ public class Pool {
      */
     public boolean isPoolEmpty(){
         return arrayListePooler.isEmpty();
+    }
+
+    /**
+     * Permet de retrouver un joueur dans la liste de joueur selon son nom
+     * @param _nom Nom du joueur que l'on désire retrouver
+     * @return Retourne le joueur retrouvé ou null sinon
+     */
+    public Joueur findJoueurByName(String _nom){
+        for (Joueur joueur : arrayListeJoueur) {
+            if (joueur != null && joueur.getNom().contains(_nom)){
+                return joueur;
+            }
+        }
+        return null;
     }
 
     /**

@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class GestionFichier {
-	public static ArrayList<Joueur> obtenirListeJoueurDeData() {
+	public static ArrayList<joueurHockey.Joueur> obtenirListeJoueurDeData() {
 		File fichier = new File(Paths.get("data/playerData") + "\\18-19.csv");
 		BufferedReader br;
 		ArrayList<Joueur> listeJoueurRetournee = new ArrayList<Joueur>();
