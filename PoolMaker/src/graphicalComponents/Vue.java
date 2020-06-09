@@ -100,35 +100,37 @@ public class Vue extends JFrame{
 		this.setLocationRelativeTo(null);
     }
 
-    public void listeJoueursUpdate(){
+    private void listeJoueursUpdate(){
 		tableJoueurs = new JTable(rechercheListeJoueur(champRechercheMot.getText()),
 				new String[]{"Nom", "Équipe", "Pos.", "But", "Ass."});
 		rafraichissementAffichageListeJoueur();
 		ajoutListenerRightClickListeJoueur();
 	}
 
-	public String[][] creationMatriceJoueur(){
-		ArrayList<Joueur> listeJoueur = GestionFichier.obtenirListeJoueurDeData();
+	private String[][] creationMatriceJoueur(){
+		ArrayList<Joueur> listeJoueur = Pool.getInstance().arrayListeJoueur;
 	    String[][] matriceInfoJoueur = new String[listeJoueur.size()][5];
 
 	    for(int row = 2; row < listeJoueur.size(); row++){
-	    	if (listeJoueur.get(row) != null) {
+	    	Joueur joueurSelectionne = listeJoueur.get(row);
+	    	if (joueurSelectionne.getChoisit()) System.out.println("Joueur choisit : " + joueurSelectionne);
+			if (joueurSelectionne != null && !joueurSelectionne.getChoisit()) {
 		    	for (int col = 0; col <= 4; col++) {
 		    		switch(col) {
 		    		  case 0: // Nom
-		    			  matriceInfoJoueur[row-2][col] = listeJoueur.get(row).getNom();
+		    			  matriceInfoJoueur[row-2][col] = joueurSelectionne.getNom();
 		    			  	break;
 		    		  case 1: // Équipe
-		    			  matriceInfoJoueur[row-2][col] = listeJoueur.get(row).getEquipe();
+		    			  matriceInfoJoueur[row-2][col] = joueurSelectionne.getEquipe();
 		    			  	break;
 		    		  case 2: // Position
-		    			  matriceInfoJoueur[row-2][col] = listeJoueur.get(row).getPosition();
+		    			  matriceInfoJoueur[row-2][col] = joueurSelectionne.getPosition();
 			    		    break;
 		    		  case 3: // Buts
-		    			  matriceInfoJoueur[row-2][col] = String.format("%02d", (listeJoueur.get(row).getButs()));
+		    			  matriceInfoJoueur[row-2][col] = String.format("%02d", (joueurSelectionne.getButs()));
 			    		    break;
 		    		  case 4: // Assistances
-		    			  matriceInfoJoueur[row-2][col] = String.format("%02d", (listeJoueur.get(row).getAssistances()));
+		    			  matriceInfoJoueur[row-2][col] = String.format("%02d", (joueurSelectionne.getAssistances()));
 			    		    break;
 		    		  default:
 		    		}
@@ -138,7 +140,7 @@ public class Vue extends JFrame{
 	    return matriceInfoJoueur;
 	}
 
-	public String[][] rechercheListeJoueur(String charRecherche){
+	private String[][] rechercheListeJoueur(String charRecherche){
 		String[][] matriceJoueur = creationMatriceJoueur();
 		String[][] listeJoueurFiltre = new String[matriceJoueur.length][];
 		int iterateur = 0;
@@ -146,7 +148,7 @@ public class Vue extends JFrame{
 		for (String[] joueurFiltre : matriceJoueur){
 			if (joueurFiltre[0] != null)
 			{
-				if (joueurFiltre[0].toLowerCase().contains(charRecherche)) {
+				if (joueurFiltre[0].toLowerCase().contains(charRecherche.toLowerCase())) {
 					listeJoueurFiltre[iterateur] = joueurFiltre;
 					iterateur++;
 				}
@@ -343,7 +345,9 @@ public class Vue extends JFrame{
 
 							jMenuItem.addActionListener(menuItemPoolerUnActionListener -> {
 								pool.getPooler(poolerId).ajoutJoueurAuPool(joueurSelectionner);
+								pool.choisirJoueur(joueurSelectionner.getJoueurID());
 								refreshAffichagePool();
+								listeJoueursUpdate();
 							});
 							anItem.add(jMenuItem);
 						}

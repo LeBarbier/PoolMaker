@@ -100,10 +100,29 @@ public class Pool {
     /**
      * Obtenir les informations d'un joueur à partir de son ID
      * @param _idJoueur Id du joueur que l'on recherche
-     * @return Retourne les informations du joueur retrouvées
+     * @return Retourne les informations du joueur retrouvées, sinon null
      */
-    public Joueur getJoueur(int _idJoueur){
-        return arrayListeJoueur.get(_idJoueur);
+    public Joueur getJoueur(int _idJoueur) {
+        for (Joueur joueur : arrayListeJoueur) {
+            if (joueur.getJoueurID() == _idJoueur)
+                return joueur;
+        }
+        return null;
+    }
+
+    /**
+     * Permet d'obtenir l'id du joueur dans la liste arrayListeJoueur
+     * @param _idJoueur Numéro d'id du joueur
+     * @return Retourne le position du joueur dans la liste arrayListeJoueur
+     */
+    public int getJoueurListeId(int _idJoueur){
+        int indiceRetour = 0;
+        for (Joueur joueur : arrayListeJoueur) {
+            if (joueur.getJoueurID() == _idJoueur)
+                return indiceRetour;
+            indiceRetour++;
+        }
+        return indiceRetour;
     }
 
     /**
@@ -112,8 +131,8 @@ public class Pool {
      * @return Retourne vrai si le joueur à été associé au pooler, faux sinon
      */
     public boolean choisirJoueur(int _idJoueur) {
-        if (arrayListeJoueur.get(_idJoueur).getChoisit() == false)
-            arrayListeJoueur.get(_idJoueur).setChoisit(true);
+        if (!arrayListeJoueur.get(getJoueurListeId(_idJoueur)).getChoisit())
+            arrayListeJoueur.get(getJoueurListeId(_idJoueur)).setChoisit(true);
         else
             return false;
 
