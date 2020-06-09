@@ -39,8 +39,8 @@ public class Vue extends JFrame{
 		tableJoueurs = new JTable();
 		tableJoueurs.setModel(model);
 		for (int i = 0; i < 5; i++){
-			if (i == 0) { tableJoueurs.getColumnModel().getColumn(i).setMaxWidth(125); }
-			else { tableJoueurs.getColumnModel().getColumn(i).setMaxWidth(50); }
+			if (i == 0) { tableJoueurs.getColumnModel().getColumn(i).setMinWidth(125); }
+			else { tableJoueurs.getColumnModel().getColumn(i).setMinWidth(50); }
 		}
 
 		tableJoueurs.setAutoCreateRowSorter(true);
@@ -48,6 +48,7 @@ public class Vue extends JFrame{
 		tableJoueurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
 		CreationAffichage();
+		setMinimumSize(new Dimension(350,550));
 	}
 	
 	public void CreationAffichage() {
@@ -70,54 +71,13 @@ public class Vue extends JFrame{
 		barreMenu.add(menuMenu);
 		barreMenu.add(menuParamUtilisateur);
 
-		tableJoueurs.addMouseListener(new MouseListener() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				JPopupMenu popupMenu = new JPopupMenu();
-				Joueur joueurSelectionner = Pool.getInstance().findJoueurByName(tableJoueurs.getValueAt(tableJoueurs.getSelectedRow(),0).toString());
+		ajoutListenerRightClickListeJoueur();
 
-				if (e.getButton() == 3){
-					JMenu anItem = new JMenu("Ajouter à ...");
-
-					if (pool != null) {
-						for (int i = 0; i <= 7; i++){
-							final int poolerId = i;
-							JMenuItem jMenuItem = new JMenuItem(pool.getPooler(poolerId).getPoolerPrenom());
-
-							jMenuItem.addActionListener(menuItemPoolerUnActionListener -> {
-								pool.getPooler(poolerId).ajoutJoueurAuPool(joueurSelectionner);
-								// String[][] stringMatriceJoueurPooler = Pooler.arrayListJoueurToStringMatrice(pool.getPooler(0).getPool());
-
-								refreshAffichagePool();
-							});
-							anItem.add(jMenuItem);
-						}
-					}
-					popupMenu.add(anItem);
-					popupMenu.show(e.getComponent(), e.getX(), e.getY());
-				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-			}
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-			@Override
-			public void mouseExited(MouseEvent e) {
-			}
-		});
-
+		champRechercheMot.setSize(175, 25);
 		listeJoueurScroll = new JScrollPane(tableJoueurs);
 		tableJoueurs.setFillsViewportHeight(true);
 		joueurRechercheJPanel.add(libelleRecherche);
 		joueurRechercheJPanel.add(champRechercheMot);
-		champRechercheMot.setPreferredSize(new Dimension(150, 25));
 
 		setJMenuBar(barreMenu);
 		add(joueurRechercheJPanel, BorderLayout.PAGE_START);
@@ -138,13 +98,13 @@ public class Vue extends JFrame{
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		refreshAffichagePool();
 		this.setLocationRelativeTo(null);
-        this.setResizable(false);
     }
 
     public void listeJoueursUpdate(){
 		tableJoueurs = new JTable(rechercheListeJoueur(champRechercheMot.getText()),
 				new String[]{"Nom", "Équipe", "Pos.", "But", "Ass."});
 		rafraichissementAffichageListeJoueur();
+		ajoutListenerRightClickListeJoueur();
 	}
 
 	public String[][] creationMatriceJoueur(){
@@ -220,35 +180,35 @@ public class Vue extends JFrame{
 
 		myPanel.add(new JLabel("Pooler #1"));
 		myPanel.add(poolerUnTextField);
-		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+		myPanel.add(Box.createVerticalStrut(10));
 
 		myPanel.add(new JLabel("Pooler #2"));
 		myPanel.add(poolerDeuxTextField);
-		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+		myPanel.add(Box.createVerticalStrut(10));
 
 		myPanel.add(new JLabel("Pooler #3"));
 		myPanel.add(poolerTroisTextField);
-		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+		myPanel.add(Box.createVerticalStrut(10));
 
 		myPanel.add(new JLabel("Pooler #4"));
 		myPanel.add(poolerQuatreTextField);
-		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+		myPanel.add(Box.createVerticalStrut(10));
 
 		myPanel.add(new JLabel("Pooler #5"));
 		myPanel.add(poolerCinqTextField);
-		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+		myPanel.add(Box.createVerticalStrut(10));
 
 		myPanel.add(new JLabel("Pooler #6"));
 		myPanel.add(poolerSixTextField);
-		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+		myPanel.add(Box.createVerticalStrut(10));
 
 		myPanel.add(new JLabel("Pooler #7"));
 		myPanel.add(poolerSeptTextField);
-		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+		myPanel.add(Box.createVerticalStrut(10));
 
 		myPanel.add(new JLabel("Pooler #8"));
 		myPanel.add(poolerHuitTextField);
-		myPanel.add(Box.createVerticalStrut(10)); // a spacer
+		myPanel.add(Box.createVerticalStrut(10));
 
 		int result = JOptionPane.showConfirmDialog(null, myPanel,
 				"Entrée le nom de chacun des poolers", JOptionPane.OK_CANCEL_OPTION,
@@ -272,11 +232,7 @@ public class Vue extends JFrame{
 		if (jPanelAllPooler != null) remove(jPanelAllPooler);
 		jPanelAllPooler = new JPanel();
 		ArrayList<JPanel> arrayListeJPanel = new ArrayList<>();
-		if (arrayListeJPanel.size() > 0) {
-			for (JPanel jPanel : arrayListeJPanel) {
-				jPanelAllPooler.remove(jPanel);
-			}
-		}
+		for (JPanel jPanel : arrayListeJPanel) jPanelAllPooler.remove(jPanel);
 
 		if (pool == null) {
 			pool = Pool.getInstance();
@@ -295,17 +251,14 @@ public class Vue extends JFrame{
 					new String[]{"Nom", "Équipe", "Pos.", "But", "Ass."});
 
 			for (int j = 0; j < 5; j++){
-				if (j == 0) { tableJoueurPooler.getColumnModel().getColumn(j).setMaxWidth(125); }
-				else { tableJoueurPooler.getColumnModel().getColumn(j).setMaxWidth(50); }
+				if (j == 0) { tableJoueurPooler.getColumnModel().getColumn(j).setMinWidth(125); }
+				else { tableJoueurPooler.getColumnModel().getColumn(j).setMinWidth(50); }
 			}
 
 			JScrollPane jScrollPaneJoueurDuPooler = new JScrollPane(tableJoueurPooler);
-			jScrollPaneJoueurDuPooler.setPreferredSize(new Dimension(250, 50));
-
 			jPanelUnPooler.add(new JLabel(listePoolerNom[i]));
 			jPanelUnPooler.add(Box.createVerticalStrut(10));
 			jPanelUnPooler.add(jScrollPaneJoueurDuPooler);
-
 			arrayListeJPanel.add(jPanelUnPooler);
 		}
 
@@ -315,12 +268,20 @@ public class Vue extends JFrame{
 		jPanelAllPooler.setLayout(new BoxLayout(jPanelAllPooler, BoxLayout.Y_AXIS));
 
 		add(jPanelAllPooler, BorderLayout.EAST);
+		jPanelAllPooler.validate();
+		jPanelAllPooler.repaint();
+
+
 		validate();
 		repaint();
 		pack();
+
+
+		setMinimumSize(new Dimension(750, 500));
+		jPanelAllPooler.setMinimumSize(new Dimension(1000, 100));
 	}
 
-	public String[][] arrayListJoueurToMatriceString(ArrayList<Joueur> _array){
+	/*public String[][] arrayListJoueurToMatriceString(ArrayList<Joueur> _array){
 		int longueurArray = 0;
 		if (_array != null) longueurArray = _array.size();
 		String[][] matriceStringRetournee = new String[longueurArray][];
@@ -348,9 +309,13 @@ public class Vue extends JFrame{
 			}
 		}
 		return matriceStringRetournee;
-	}
+	}*/
 
 	public void rafraichissementAffichageListeJoueur(){
+		for (int i = 0; i < 5; i++){
+			if (i == 0) { tableJoueurs.getColumnModel().getColumn(i).setMinWidth(125); }
+			else { tableJoueurs.getColumnModel().getColumn(i).setMinWidth(50); }
+		}
 		tableJoueurs.setAutoCreateRowSorter(true);
 		tableJoueurs.setDefaultEditor(Object.class, null);
 		tableJoueurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -358,7 +323,43 @@ public class Vue extends JFrame{
 		remove(listeJoueurScroll);
 		listeJoueurScroll = new JScrollPane(tableJoueurs);
 		add(listeJoueurScroll, BorderLayout.CENTER);
-		listeJoueurScroll.setPreferredSize(new Dimension(250, 500));
 		validate();
+	}
+
+	private void ajoutListenerRightClickListeJoueur(){
+		tableJoueurs.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JPopupMenu popupMenu = new JPopupMenu();
+				Joueur joueurSelectionner = Pool.getInstance().findJoueurByName(tableJoueurs.getValueAt(tableJoueurs.getSelectedRow(),0).toString());
+
+				if (e.getButton() == 3){
+					JMenu anItem = new JMenu("Ajouter à ...");
+
+					if (pool != null) {
+						for (int i = 0; i <= 7; i++){
+							final int poolerId = i;
+							JMenuItem jMenuItem = new JMenuItem(pool.getPooler(poolerId).getPoolerPrenom());
+
+							jMenuItem.addActionListener(menuItemPoolerUnActionListener -> {
+								pool.getPooler(poolerId).ajoutJoueurAuPool(joueurSelectionner);
+								refreshAffichagePool();
+							});
+							anItem.add(jMenuItem);
+						}
+					}
+					popupMenu.add(anItem);
+					popupMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}
+		});
 	}
 }
