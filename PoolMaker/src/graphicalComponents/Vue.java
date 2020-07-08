@@ -21,10 +21,12 @@ public class Vue extends JFrame{
     JLabel libelleRecherche;
     JTable tableJoueurs;
 	DefaultTableModel model;
-	JMenuBar barreMenu;
+	JMenuBar barreMenuPrincipal;
+	JMenu menuSelectionAnnee;
     JMenu menuParamUtilisateur;
     JMenu menuMenu;
 	JMenuItem creerNouveauPool;
+	ArrayList<JMenuItem> listeMenuAnnee;
 	Pool pool;
 	JPanel jPanelAllPooler;
 
@@ -48,7 +50,6 @@ public class Vue extends JFrame{
 		tableJoueurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
 		CreationAffichage();
-		setMinimumSize(new Dimension(350,550));
 	}
 	
 	public void CreationAffichage() {
@@ -57,10 +58,21 @@ public class Vue extends JFrame{
 		setTitle("Pool maker");
 		setLayout(new BorderLayout());
 
-		barreMenu = new JMenuBar();
+		barreMenuPrincipal = new JMenuBar();
 		menuParamUtilisateur = new JMenu("Paramètres Utilisateur");
 		menuMenu = new JMenu("Menu");
 		creerNouveauPool = new JMenuItem("Créer un nouveau Pool");
+		menuSelectionAnnee = new JMenu("Année...");
+		listeMenuAnnee = new ArrayList<>();
+		listeMenuAnnee.add(new JMenuItem("Moyenne"));
+		for (String fichier : GestionFichier.obtenirListeFichierStats()){
+			JMenuItem menuItem = new JMenuItem("20" + fichier.substring(0, fichier.length() - 4));
+			menuItem.addActionListener(e -> {
+				pool.arrayListeJoueur = GestionFichier.obtenirListeJoueurDeData(fichier);
+				listeJoueursUpdate();
+			});
+			listeMenuAnnee.add(menuItem);
+		}
 
 		creerNouveauPool.addActionListener(e -> {
 			initDataPool();
@@ -68,18 +80,23 @@ public class Vue extends JFrame{
 		});
 
 		menuMenu.add(creerNouveauPool);
-		barreMenu.add(menuMenu);
-		barreMenu.add(menuParamUtilisateur);
+		menuMenu.add(menuSelectionAnnee);
+		for (JMenuItem menuAnnee : listeMenuAnnee){
+			menuSelectionAnnee.add(menuAnnee);
+		}
+		barreMenuPrincipal.add(menuMenu);
+		barreMenuPrincipal.add(menuParamUtilisateur);
+
 
 		ajoutListenerRightClickListeJoueur();
 
-		champRechercheMot.setSize(175, 25);
+		champRechercheMot.setSize(new Dimension(175, 25));
 		listeJoueurScroll = new JScrollPane(tableJoueurs);
 		tableJoueurs.setFillsViewportHeight(true);
 		joueurRechercheJPanel.add(libelleRecherche);
 		joueurRechercheJPanel.add(champRechercheMot);
 
-		setJMenuBar(barreMenu);
+		setJMenuBar(barreMenuPrincipal);
 		add(joueurRechercheJPanel, BorderLayout.PAGE_START);
 		add(listeJoueurScroll, BorderLayout.CENTER);
 
@@ -95,6 +112,7 @@ public class Vue extends JFrame{
 			}
 		});
 
+		setMinimumSize(new Dimension(500, 650));
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		refreshAffichagePool();
 		this.setLocationRelativeTo(null);
@@ -113,7 +131,6 @@ public class Vue extends JFrame{
 
 	    for(int row = 2; row < listeJoueur.size(); row++){
 	    	Joueur joueurSelectionne = listeJoueur.get(row);
-	    	if (joueurSelectionne.getChoisit()) System.out.println("Joueur choisit : " + joueurSelectionne);
 			if (joueurSelectionne != null && !joueurSelectionne.getChoisit()) {
 		    	for (int col = 0; col <= 4; col++) {
 		    		switch(col) {
@@ -239,7 +256,6 @@ public class Vue extends JFrame{
 		if (pool == null) {
 			pool = Pool.getInstance();
 			repaint();
-			pack();
 			return;
 		}
 
@@ -268,50 +284,22 @@ public class Vue extends JFrame{
 			jPanelAllPooler.add(jPanel);
 		}
 		jPanelAllPooler.setLayout(new BoxLayout(jPanelAllPooler, BoxLayout.Y_AXIS));
+		jPanelAllPooler.setMinimumSize(new Dimension(475, 500));
 
-		add(jPanelAllPooler, BorderLayout.EAST);
+		JSplitPane splitPanel = new JSplitPane();
+		splitPanel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		splitPanel.add(jPanelAllPooler, JSplitPane.RIGHT);
+		splitPanel.add(listeJoueurScroll, JSplitPane.LEFT);
+
+		add(splitPanel, BorderLayout.CENTER);
 		jPanelAllPooler.validate();
 		jPanelAllPooler.repaint();
 
-
 		validate();
 		repaint();
-		pack();
 
-
-		setMinimumSize(new Dimension(750, 500));
-		jPanelAllPooler.setMinimumSize(new Dimension(1000, 100));
+		setMinimumSize(new Dimension(950, 650));
 	}
-
-	/*public String[][] arrayListJoueurToMatriceString(ArrayList<Joueur> _array){
-		int longueurArray = 0;
-		if (_array != null) longueurArray = _array.size();
-		String[][] matriceStringRetournee = new String[longueurArray][];
-
-		// "Nom", "Équipe", "Pos.", "But", "Ass."
-		for (int i = 0; i < matriceStringRetournee.length; i++){
-			for (int j = 0; j < 5; j++){
-				switch (j){
-					case 0 :
-						matriceStringRetournee[i][j] = _array.get(i).getNom();
-						break;
-					case 1 :
-						matriceStringRetournee[i][j] = _array.get(i).getEquipe();
-						break;
-					case 2 :
-						matriceStringRetournee[i][j] = _array.get(i).getPosition();
-						break;
-					case 3 :
-						matriceStringRetournee[i][j] = Integer.toString(_array.get(i).getButs());
-						break;
-					case 4 :
-						matriceStringRetournee[i][j] = Integer.toString(_array.get(i).getAssistances());
-						break;
-				}
-			}
-		}
-		return matriceStringRetournee;
-	}*/
 
 	public void rafraichissementAffichageListeJoueur(){
 		for (int i = 0; i < 5; i++){

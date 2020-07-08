@@ -14,7 +14,7 @@ public class Pool {
      */
     private Pool(){
         arrayListePooler = new ArrayList<>();
-        arrayListeJoueur = GestionFichier.obtenirListeJoueurDeData();
+        arrayListeJoueur = GestionFichier.obtenirListeJoueurDeData("18-19.csv");
     }
 
     /**
