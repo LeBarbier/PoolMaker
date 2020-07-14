@@ -310,10 +310,8 @@ public class Vue extends JFrame{
 		tableJoueurs.setDefaultEditor(Object.class, null);
 		tableJoueurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 
-		remove(listeJoueurScroll);
-		listeJoueurScroll = new JScrollPane(tableJoueurs);
-		add(listeJoueurScroll, BorderLayout.CENTER);
-		validate();
+		listeJoueurScroll.setViewportView(tableJoueurs);
+		listeJoueurScroll.revalidate();
 	}
 
 	private void ajoutListenerRightClickListeJoueur(){
